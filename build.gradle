@@ -1,30 +1,93 @@
 plugins {
-    id 'java'
+    id "com.github.johnrengelman.shadow" version "7.0.0" apply false
 }
 
-group 'xyz.tomskiy'
-version '1.0'
+ext.set('output', "../output/")
+project.buildDir = "../output/"
 
-repositories {
-    mavenCentral()
+allprojects {
+    group = "xyz.antieurope"
+    version = "1.0.0-SNAPSHOT"
 }
 
-dependencies {
+configure(subprojects) {
+    apply plugin: "java"
+    apply plugin: "java-library"
+    apply plugin: "maven-publish"
+    apply plugin: "com.github.johnrengelman.shadow"
 
-    /** Lombok */
-    implementation 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    repositories {
+        mavenCentral()
+        mavenLocal()
 
-    /** Tests */
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.0'
+        maven {
+            url = "https://oss.sonatype.org/content/repositories/snapshots"
+        }
 
-    /** Logger */
-    implementation 'org.apache.logging.log4j:log4j-api:2.14.1'
-    implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
+        maven { url 'https://jitpack.io' }
 
-}
+        maven { url 'https://libraries.minecraft.net/' }
+    }
 
-test {
-    useJUnitPlatform()
+    tasks {
+        shadowJar {
+            exclude 'META-INF/DEPENDENCIES'
+            exclude 'META-INF/LICENSE'
+            exclude 'META-INF/LICENSE.txt'
+            exclude 'META-INF/NOTICE'
+            exclude 'META-INF/NOTICE.txt'
+            exclude 'META-INF/maven/**'
+        }
+
+        compileJava {
+            targetCompatibility = JavaVersion.VERSION_11
+            sourceCompatibility = JavaVersion.VERSION_11
+            options.encoding = "UTF-8"
+        }
+
+        compileTestJava {
+            targetCompatibility = JavaVersion.VERSION_11
+            sourceCompatibility = JavaVersion.VERSION_11
+            options.encoding = "UTF-8"
+        }
+
+        build {
+            dependsOn(shadowJar)
+        }
+
+        jar {
+            finalizedBy(publishToMavenLocal)
+        }
+
+        test {
+            useJUnitPlatform()
+        }
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+            }
+        }
+    }
+
+    dependencies {
+
+        /** Logger */
+        implementation 'org.apache.logging.log4j:log4j-api:2.14.1'
+        implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
+
+        /** Ломбок */
+        compileOnly "org.projectlombok:lombok:1.18.20"
+        annotationProcessor "org.projectlombok:lombok:1.18.20"
+        testCompileOnly "org.projectlombok:lombok:1.18.20"
+        testAnnotationProcessor "org.projectlombok:lombok:1.18.20"
+
+        /** Аннотации от JetBrains */
+        compileOnly "org.jetbrains:annotations:20.1.0"
+
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    }
 }
