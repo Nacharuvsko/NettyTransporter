@@ -1,0 +1,6 @@
+dependencies {
+    api "io.netty:netty-handler:4.1.53.Final"
+    api "io.netty:netty-transport-native-epoll:4.1.53.Final:linux-x86_64"
+    api "io.netty:netty-codec:4.1.53.Final"
+    api "net.sf.trove4j:trove4j:3.0.3"
+}

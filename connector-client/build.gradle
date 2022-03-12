@@ -1,0 +1,12 @@
+dependencies {
+    implementation project(":protocol")
+}
+
+tasks {
+    shadowJar {
+        def output = rootProject.ext.get('output')
+        destinationDirectory = file("$rootDir/$output")
+
+        archiveFileName = "connector-client.jar"
+    }
+}
