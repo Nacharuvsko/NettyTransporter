@@ -1,6 +1,5 @@
 package xyz.winston.nettytransporter.connection;
 
-import com.sun.jdi.connect.Connector;
 import io.netty.channel.socket.SocketChannel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -52,6 +51,7 @@ public class RemoteClientConnection extends AbstractRemoteClientChannel {
 
     @Override
     protected void onDisconnect() {
+        if (server == null) return; // FIXME (related to channel error)
         try {
             log.info("Server {} disconnected.", server.getName());
             ServerManager.IMP.removeServer((AbstractServer) server);
@@ -72,7 +72,7 @@ public class RemoteClientConnection extends AbstractRemoteClientChannel {
         // клиент пытается авторизоваться
         if (!packet.getToken().equals(core.getToken())) {
             ctx.setResponse(new Handshake.Response(Handshake.Result.FAILED, "Bad Token"));
-            close();
+            ctx.setShouldClose(true);
             return;
         }
 
@@ -86,7 +86,7 @@ public class RemoteClientConnection extends AbstractRemoteClientChannel {
                     Handshake.Result.FAILED,
                     "Server with that name already exists: " + serverName
             ));
-            close();
+            ctx.setShouldClose(true);
             return;
         }
 

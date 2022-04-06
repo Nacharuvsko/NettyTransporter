@@ -43,7 +43,7 @@ public final class S01PacketServerExample extends Packet<PlayServerProcessor> {
     }
 
     /** Funny packet enum example */
-    private enum ExampleEnum {
+    public enum ExampleEnum {
         $_PRIVET_KAK_DELA_$
     }
 }

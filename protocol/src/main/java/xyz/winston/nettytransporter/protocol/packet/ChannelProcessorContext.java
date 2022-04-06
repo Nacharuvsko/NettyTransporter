@@ -1,7 +1,9 @@
 package xyz.winston.nettytransporter.protocol.packet;
 
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.val;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -19,6 +21,9 @@ public class ChannelProcessorContext {
 
     private final AtomicInteger latch = new AtomicInteger();
     private final AtomicBoolean fired = new AtomicBoolean();
+
+    @Setter
+    private boolean shouldClose;
 
     private Packet<?> response;
 
@@ -93,10 +98,15 @@ public class ChannelProcessorContext {
 
     public void done() {
         if (response != null) {
-            context.writeAndFlush(response);
+            if (shouldClose) {
+                context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+            } else {
+                context.writeAndFlush(response, context.voidPromise());
+            }
         }
     }
 
+    /** invoked in {@link xyz.winston.nettytransporter.protocol.pipeline.PacketHandler#channelRead0(ChannelHandlerContext, Packet) PacketHandler.channelRead0()} */
     public void post() {
         if (latch.get() == 0) {
             done();
