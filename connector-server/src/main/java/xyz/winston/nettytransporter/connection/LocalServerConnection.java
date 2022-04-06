@@ -16,15 +16,6 @@ public class LocalServerConnection extends AbstractServerChannel {
 
     private final ConnectorServer core;
 
-    // @author WhileInside
-    // Copyright 2020
-    //
-    // Этот код точно не был спизжен из кора ласткрафта со строки 37 и 38 класса NettyHelper.java core-app
-    private static final int LOW_MARK = SystemPropertyUtil.getInt("ru.litecloud.core.low_mark", 2 << 18); // 0.5 mb
-    private static final int HIGH_MARK = SystemPropertyUtil.getInt("ru.litecloud.core.high_mark", 2 << 20); // 2 mb
-
-    private static final WriteBufferWaterMark MARK = new WriteBufferWaterMark(LOW_MARK, HIGH_MARK);
-
     public LocalServerConnection(ConnectorServer core, SocketAddress address, int threads) {
         super(address, threads);
 
@@ -47,7 +38,5 @@ public class LocalServerConnection extends AbstractServerChannel {
 
         channel.config().setOption(ChannelOption.TCP_NODELAY, true);
         channel.config().setAllocator(PooledByteBufAllocator.DEFAULT);
-
-        channel.config().setWriteBufferWaterMark(MARK);
     }
 }

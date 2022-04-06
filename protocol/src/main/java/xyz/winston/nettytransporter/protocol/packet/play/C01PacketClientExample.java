@@ -13,7 +13,7 @@ import xyz.winston.nettytransporter.protocol.packet.PacketUtils;
 import xyz.winston.nettytransporter.protocol.packet.play.processor.PlayClientProcessor;
 
 /**
- * Пример пакета, отправляемого клиенту
+ * Пример пакета, отправляемого ОТ клиента СЕРВЕРУ
  * @author winston
  */
 @EqualsAndHashCode(callSuper = true)

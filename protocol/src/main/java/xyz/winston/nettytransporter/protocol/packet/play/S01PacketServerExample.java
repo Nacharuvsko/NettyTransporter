@@ -7,10 +7,11 @@ import xyz.winston.nettytransporter.protocol.packet.ChannelProcessorContext;
 import xyz.winston.nettytransporter.protocol.packet.Packet;
 import xyz.winston.nettytransporter.protocol.packet.PacketProcessor;
 import xyz.winston.nettytransporter.protocol.packet.PacketUtils;
+import xyz.winston.nettytransporter.protocol.packet.play.processor.PlayClientProcessor;
 import xyz.winston.nettytransporter.protocol.packet.play.processor.PlayServerProcessor;
 
 /**
- * Пример пакета, отправляемого серверу
+ * Пример пакета, отправляемого ОТ сервера КЛИЕНТУ
  * @author winston
  */
 @EqualsAndHashCode(callSuper = true)

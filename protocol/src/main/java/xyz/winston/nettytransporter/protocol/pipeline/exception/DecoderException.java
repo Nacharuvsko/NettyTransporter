@@ -1,15 +1,17 @@
 package xyz.winston.nettytransporter.protocol.pipeline.exception;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author winston
  */
-public class DecoderException extends InstantException {
+public final class DecoderException extends InstantException {
 
-    public DecoderException(String message) {
+    public DecoderException(final @NotNull String message) {
         super(message);
     }
 
-    public DecoderException(Throwable cause) {
+    public DecoderException(final @NotNull Throwable cause) {
         super(cause);
     }
 

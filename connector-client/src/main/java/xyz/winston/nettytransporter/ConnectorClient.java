@@ -11,7 +11,6 @@ import java.net.SocketAddress;
 import java.util.function.Consumer;
 
 /**
- *
  * @author winston
  */
 @Getter
@@ -44,17 +43,16 @@ public class ConnectorClient {
         );
     }
 
-    public void openConnection(final @NotNull Consumer<@NotNull Runnable> synchronizedConnectionConsumer) {
+    public void openConnection(final @NotNull Runnable onConnected) {
         connection = new LocalClientConnection(this, serverName, address, 2);
 
-        synchronizedConnectionConsumer.accept(() -> {
-            try {
-                connection.connectSynchronized();
-            } catch (ConnectException e) {
-                e.printStackTrace();
-            }
-        });
+        try {
+            connection.connectSynchronized();
+        } catch (ConnectException e) {
+            e.printStackTrace();
+        }
 
+        onConnected.run();
         Connection.setConnection(connection);
     }
 }

@@ -4,7 +4,7 @@ import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author winston
+ * @author WhileIn
  */
 @UtilityClass
 public final class FastStrings {

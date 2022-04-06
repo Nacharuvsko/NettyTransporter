@@ -30,6 +30,7 @@ public final class ConnectorServer {
 
     private final long startDate = System.nanoTime();
 
+    @Getter
     private LocalServerConnection connection;
 
     private final String host;
@@ -54,7 +55,7 @@ public final class ConnectorServer {
     }
 
     public void openConnection() {
-        log.info("Открываем подключение...");
+        log.info("Opening connection...");
 
         this.connection = new LocalServerConnection(this,
                 new InetSocketAddress(
@@ -65,14 +66,14 @@ public final class ConnectorServer {
         try {
             this.connection.bindSynchronized();
         } catch (BindException e) {
-            log.trace("Не удалось открыть подключение", e);
+            log.trace("Unavailable to open connection", e);
             return;
         }
 
-        log.info("Подключение открыто по адресу {}", connection.getChannel().localAddress());
+        log.info("Connection opened at {}", connection.getChannel().localAddress());
 
-        log.info("Использование Epoll: {}", connection.isEpoll());
-        log.info("Ядро было запущено за {}мс", getUptime(TimeUnit.MILLISECONDS));
+        log.info("Using Epoll: {}", connection.isEpoll());
+        log.info("Bootstrapped in {}ms", getUptime(TimeUnit.MILLISECONDS));
     }
 
     public long getUptime(final @NotNull TimeUnit unit) {

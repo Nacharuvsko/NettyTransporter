@@ -1,14 +1,11 @@
 package xyz.winston.nettytransporter.connection.server;
 
-import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 import xyz.winston.nettytransporter.connection.RemoteClientConnection;
 
 public class CommonServer extends AbstractServer {
 
-    @Setter
-    protected volatile boolean joinable;
-
-    public CommonServer(RemoteClientConnection connection, String name) {
+    public CommonServer(final @NotNull RemoteClientConnection connection, String name) {
         super(connection, name);
     }
 

@@ -1,5 +1,6 @@
 package xyz.winston.nettytransporter.connection;
 
+import com.sun.jdi.connect.Connector;
 import io.netty.channel.socket.SocketChannel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -52,7 +53,7 @@ public class RemoteClientConnection extends AbstractRemoteClientChannel {
     @Override
     protected void onDisconnect() {
         try {
-            log.info("Сервер {} отключён.", server.getName());
+            log.info("Server {} disconnected.", server.getName());
             ServerManager.IMP.removeServer((AbstractServer) server);
         } finally {
             server = null;
@@ -61,8 +62,9 @@ public class RemoteClientConnection extends AbstractRemoteClientChannel {
 
     @Override
     public void process(@NonNull Throwable throwable) {
-        log.error("[{}] Не удалось обработать пакет", getDisplayName());
+        log.error("[{}] Unavailable to process packet", getDisplayName());
         log.trace(throwable);
+        throwable.printStackTrace();
     }
 
     @Override
@@ -80,7 +82,10 @@ public class RemoteClientConnection extends AbstractRemoteClientChannel {
         port = packet.getServerPort();
 
         if (ServerManager.IMP.hasServer(serverName)) {
-            ctx.setResponse(new Handshake.Response(Handshake.Result.FAILED, "Server with that name already exists: " + serverName));
+            ctx.setResponse(new Handshake.Response(
+                    Handshake.Result.FAILED,
+                    "Server with that name already exists: " + serverName
+            ));
             close();
             return;
         }
@@ -98,7 +103,7 @@ public class RemoteClientConnection extends AbstractRemoteClientChannel {
         server = new CommonServer(this, serverName);
         serverManager.addServer((AbstractServer) server);
 
-        log.info("[{}] Зарегистрирован новый сервер", getDisplayName());
+        log.info("[{}] Registered new server", getDisplayName());
     }
 
 }

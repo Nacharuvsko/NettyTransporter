@@ -7,7 +7,7 @@ import java.util.Iterator;
 
 /**
  * @param <T> Тип элементов в массиве
- * @author winston
+ * @author WhileIn
  */
 public final class ArrayIterator<T> implements Iterator<T> {
 

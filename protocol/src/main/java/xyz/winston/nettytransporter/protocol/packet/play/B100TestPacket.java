@@ -32,7 +32,7 @@ public final class B100TestPacket extends Packet<PlayProcessor> {
     }
 
     @Override
-    public boolean isProcessor(PacketProcessor processor) {
+    public boolean isProcessor(@NotNull PacketProcessor processor) {
         return processor instanceof PlayProcessor;
     }
 

@@ -30,9 +30,4 @@ public class PacketMapper {
         return classIdMap.get(cls);
     }
 
-    // юзается для отладки в хуйне с эксцепшеном отправки
-    // не регнутых пакетов
-    public TObjectIntMap<Class<?>> getClassIdMap() {
-        return classIdMap;
-    }
 }
