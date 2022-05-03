@@ -30,15 +30,13 @@ public class Handshake {
     @Data
     public static class Request extends Packet.Request<HandshakeClientProcessor, Response> {
 
-        private ConnectionType type;
-
         /**
-         * Токен - кодовая строка, которая должна совпать с текеном прописанным в
-         * уонфигурации сервера, в ином случае соединение не установится
+         * Токен - кодовая строка, которая должна совпасть с токеном прописанным в
+         * конфигурации сервера, в ином случае соединение не установится
          */
         private String token;
 
-        private String serverName;
+        private String clientName;
         private int serverPort;
 
         @Override
@@ -52,18 +50,16 @@ public class Handshake {
         }
 
         @Override
-        public void read0(@NotNull ByteBuf buf) throws Exception {
-            type = PacketUtils.readEnum(buf, ConnectionType.class);
+        public void read0(@NotNull ByteBuf buf) {
             token = PacketUtils.readString(buf);
-            serverName = PacketUtils.readString(buf);
+            clientName = PacketUtils.readString(buf);
             serverPort = buf.readUnsignedShort();
         }
 
         @Override
-        public void write0(@NotNull ByteBuf buf) throws Exception {
-            PacketUtils.writeEnum(buf, type);
+        public void write0(@NotNull ByteBuf buf) {
             PacketUtils.writeString(buf, token);
-            PacketUtils.writeString(buf, serverName);
+            PacketUtils.writeString(buf, clientName);
             buf.writeShort(serverPort);
         }
 
@@ -74,6 +70,7 @@ public class Handshake {
     }
 
     @EqualsAndHashCode(callSuper = true)
+    @SuppressWarnings("unused")
     @AllArgsConstructor
     @NoArgsConstructor
     @Data
@@ -113,10 +110,6 @@ public class Handshake {
                 PacketUtils.writeString(buf, message);
             }
         }
-    }
-
-    public enum ConnectionType {
-        SERVER, PROXY
     }
 
     public enum Result {

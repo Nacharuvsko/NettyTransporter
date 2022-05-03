@@ -17,9 +17,12 @@ import xyz.winston.nettytransporter.protocol.exception.ConnectException;
 import xyz.winston.nettytransporter.protocol.packet.BossProcessor;
 import xyz.winston.nettytransporter.protocol.packet.Packet;
 import xyz.winston.nettytransporter.protocol.packet.PacketDirection;
+import xyz.winston.nettytransporter.protocol.packet.PacketProcessor;
 
 import java.net.SocketAddress;
 import java.nio.channels.AlreadyConnectedException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -41,7 +44,7 @@ public abstract class AbstractClientChannel extends AbstractChannel {
     public AbstractClientChannel(SocketAddress address, int threads) {
         super(address, threads);
 
-        init();
+        init(new ArrayList<>()); // пустой, ибо мы регаем процессоры в Connection.registerProcessor()
     }
 
     protected void ensureConnectionAvailability() throws ConnectException {
@@ -167,8 +170,8 @@ public abstract class AbstractClientChannel extends AbstractChannel {
     }
 
     @Override
-    protected void init() {
-        super.init();
+    protected void init(Collection<PacketProcessor> customProcessors) {
+        super.init(customProcessors);
 
         initChannelClass();
         initEventLoopGroups();

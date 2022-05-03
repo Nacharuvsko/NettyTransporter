@@ -16,9 +16,11 @@ import org.jetbrains.annotations.Nullable;
 import xyz.winston.nettytransporter.protocol.exception.BindException;
 import xyz.winston.nettytransporter.protocol.packet.BossProcessor;
 import xyz.winston.nettytransporter.protocol.packet.PacketDirection;
+import xyz.winston.nettytransporter.protocol.packet.PacketProcessor;
 
 import java.net.SocketAddress;
 import java.nio.channels.AlreadyBoundException;
+import java.util.Collection;
 import java.util.function.Consumer;
 
 @Getter
@@ -34,10 +36,10 @@ public abstract class AbstractServerChannel extends AbstractChannel {
     private ChannelFuture future;
     private ServerSocketChannel channel;
 
-    public AbstractServerChannel(SocketAddress address, int threads) {
+    public AbstractServerChannel(SocketAddress address, int threads, Collection<PacketProcessor> customProcessors) {
         super(address, threads);
 
-        init();
+        init(customProcessors);
     }
 
     protected void checkBindAvailability() throws BindException {
@@ -129,8 +131,8 @@ public abstract class AbstractServerChannel extends AbstractChannel {
     }
 
     @Override
-    protected void init() {
-        super.init();
+    protected void init(Collection<PacketProcessor> customProcessors) {
+        super.init(customProcessors);
 
         initChannelFactory();
         initEventLoopGroups();

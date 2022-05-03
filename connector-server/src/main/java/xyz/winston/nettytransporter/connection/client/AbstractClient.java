@@ -1,4 +1,4 @@
-package xyz.winston.nettytransporter.connection.server;
+package xyz.winston.nettytransporter.connection.client;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,11 +7,11 @@ import xyz.winston.nettytransporter.protocol.type.ServerConnectionInfo;
 
 @Setter
 @Getter
-public abstract class AbstractServer extends AbstractConnectable {
+public abstract class AbstractClient extends AbstractConnectable {
 
     protected int slots;
 
-    public AbstractServer(RemoteClientConnection connection, String name) {
+    public AbstractClient(RemoteClientConnection connection, String name) {
         super(connection, name);
     }
 

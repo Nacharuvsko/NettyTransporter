@@ -2,6 +2,7 @@ package xyz.winston.nettytransporter.protocol.pipeline;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import xyz.winston.nettytransporter.protocol.packet.BossProcessor;
@@ -11,6 +12,7 @@ import xyz.winston.nettytransporter.protocol.packet.Packet;
 @RequiredArgsConstructor
 public class PacketHandler extends SimpleChannelInboundHandler<Packet<?>> {
 
+    @Getter
     private final BossProcessor processor;
 
     @Override

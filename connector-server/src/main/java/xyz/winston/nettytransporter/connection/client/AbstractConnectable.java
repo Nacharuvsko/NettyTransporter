@@ -1,4 +1,4 @@
-package xyz.winston.nettytransporter.connection.server;
+package xyz.winston.nettytransporter.connection.client;
 
 import lombok.Getter;
 import lombok.NonNull;

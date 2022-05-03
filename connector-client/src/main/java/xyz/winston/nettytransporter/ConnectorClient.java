@@ -1,20 +1,22 @@
 package xyz.winston.nettytransporter;
 
 import lombok.Getter;
+import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xyz.winston.nettytransporter.connection.Connection;
 import xyz.winston.nettytransporter.connection.LocalClientConnection;
 import xyz.winston.nettytransporter.protocol.exception.ConnectException;
+import xyz.winston.nettytransporter.protocol.packet.PacketProcessor;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.function.Consumer;
 
 /**
  * @author winston
  */
 @Getter
-public class ConnectorClient {
+public final class ConnectorClient {
 
     private final String host;
     private final int port;
@@ -29,13 +31,13 @@ public class ConnectorClient {
     public ConnectorClient(
             final @NotNull String host,
             final int port,
-            final @NotNull String serverName,
+            final @NotNull String clientName,
             final @NotNull String token
     ) {
         this.host = host;
         this.port = port;
         this.token = token;
-        this.serverName = serverName;
+        this.serverName = clientName;
 
         this.address = new InetSocketAddress(
                 host,
@@ -43,16 +45,22 @@ public class ConnectorClient {
         );
     }
 
-    public void openConnection(final @NotNull Runnable onConnected) {
+    public void openConnection() throws ConnectException{
+        openConnection(null);
+    }
+
+    public void openConnection(final @Nullable Runnable onConnected) throws ConnectException{
         connection = new LocalClientConnection(this, serverName, address, 2);
+        connection.connectSynchronized();
 
-        try {
-            connection.connectSynchronized();
-        } catch (ConnectException e) {
-            e.printStackTrace();
-        }
-
-        onConnected.run();
         Connection.setConnection(connection);
+
+        if (onConnected != null) {
+            onConnected.run();
+        }
+    }
+
+    public void registerProcessor(final @NonNull PacketProcessor processor) {
+        Connection.registerProcessor(processor);
     }
 }

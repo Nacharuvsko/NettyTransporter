@@ -6,7 +6,7 @@ ext.set('output', "../output/")
 project.buildDir = "../output/"
 
 allprojects {
-    group = "xyz.antieurope"
+    group = "xyz.winston"
     version = "1.0.0-SNAPSHOT"
 }
 

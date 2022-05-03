@@ -4,20 +4,30 @@ import io.netty.channel.socket.SocketChannel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import xyz.winston.nettytransporter.ConnectorServer;
-import xyz.winston.nettytransporter.connection.server.AbstractConnectable;
-import xyz.winston.nettytransporter.connection.server.AbstractServer;
-import xyz.winston.nettytransporter.connection.server.CommonServer;
-import xyz.winston.nettytransporter.connection.server.ServerManager;
+import xyz.winston.nettytransporter.connection.client.AbstractConnectable;
+import xyz.winston.nettytransporter.connection.client.AbstractClient;
+import xyz.winston.nettytransporter.connection.client.CommonClient;
+import xyz.winston.nettytransporter.connection.client.ClientManager;
 import xyz.winston.nettytransporter.protocol.channel.AbstractRemoteClientChannel;
 import xyz.winston.nettytransporter.protocol.packet.ChannelProcessorContext;
+import xyz.winston.nettytransporter.protocol.packet.PacketProcessor;
 import xyz.winston.nettytransporter.protocol.packet.PacketProtocol;
 import xyz.winston.nettytransporter.protocol.packet.handshake.Handshake;
 
-@Log4j2
-public class RemoteClientConnection extends AbstractRemoteClientChannel {
+import java.util.ArrayList;
+import java.util.Collection;
 
-    private static final ServerManager serverManager = ServerManager.IMP;
+/**
+ * @author ItzStonlex (Скорее всего), Whilein, winston
+ */
+@Log4j2
+public final class RemoteClientConnection extends AbstractRemoteClientChannel {
+
+    // ------------------------------------------------------------------
+    private static final ClientManager clientManager = ClientManager.IMP;
+    // ------------------------------------------------------------------
 
     private final ConnectorServer core;
 
@@ -28,10 +38,10 @@ public class RemoteClientConnection extends AbstractRemoteClientChannel {
     private int port;
 
     @Getter
-    private String serverName;
+    private String clientName;
 
     @Getter
-    private AbstractConnectable server;
+    private AbstractConnectable client;
 
     public RemoteClientConnection(ConnectorServer core, SocketChannel channel) {
         super(channel);
@@ -41,29 +51,22 @@ public class RemoteClientConnection extends AbstractRemoteClientChannel {
     }
 
     private String getDisplayName() {
-        return server == null ? channel.remoteAddress().toString() : server.getName();
-    }
-
-    @Override
-    public void active() {
-        // core.getPluginManager().callEvent(new ClientActiveEvent(this));
+        return client == null ? channel.remoteAddress().toString() : client.getName();
     }
 
     @Override
     protected void onDisconnect() {
-        if (server == null) return; // FIXME (related to channel error)
         try {
-            log.info("Server {} disconnected.", server.getName());
-            ServerManager.IMP.removeServer((AbstractServer) server);
+            log.info("Client {} disconnected.", client.getName());
+            ClientManager.IMP.removeClient((AbstractClient) client);
         } finally {
-            server = null;
+            client = null;
         }
     }
 
     @Override
     public void process(@NonNull Throwable throwable) {
         log.error("[{}] Unavailable to process packet", getDisplayName());
-        log.trace(throwable);
         throwable.printStackTrace();
     }
 
@@ -76,15 +79,13 @@ public class RemoteClientConnection extends AbstractRemoteClientChannel {
             return;
         }
 
-        boolean isProxy = packet.getType() == Handshake.ConnectionType.PROXY;
-
-        serverName = packet.getServerName();
+        clientName = packet.getClientName();
         port = packet.getServerPort();
 
-        if (ServerManager.IMP.hasServer(serverName)) {
+        if (ClientManager.IMP.hasClient(clientName)) {
             ctx.setResponse(new Handshake.Response(
                     Handshake.Result.FAILED,
-                    "Server with that name already exists: " + serverName
+                    "Client with that name already exists: " + clientName
             ));
             ctx.setShouldClose(true);
             return;
@@ -93,17 +94,14 @@ public class RemoteClientConnection extends AbstractRemoteClientChannel {
         sendPacket(new Handshake.Response(Handshake.Result.SUCCESS, null));
         upgradeConnection(PacketProtocol.PLAY);
 
-        // баккит должен будет отправить слоты и карту (если это мини-игра)
-        // для прокси сразу в плей
-
         createServer();
     }
 
     private void createServer() {
-        server = new CommonServer(this, serverName);
-        serverManager.addServer((AbstractServer) server);
+        client = new CommonClient(this, clientName);
+        clientManager.addClient((AbstractClient) client);
 
-        log.info("[{}] Registered new server", getDisplayName());
+        log.info("[{}] Registered new client", getDisplayName());
     }
 
 }

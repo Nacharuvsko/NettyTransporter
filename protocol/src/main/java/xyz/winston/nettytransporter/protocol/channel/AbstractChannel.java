@@ -5,16 +5,20 @@ import io.netty.channel.epoll.Epoll;
 import io.netty.channel.socket.SocketChannel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import xyz.winston.nettytransporter.protocol.packet.BossProcessor;
 import xyz.winston.nettytransporter.protocol.packet.PacketDirection;
+import xyz.winston.nettytransporter.protocol.packet.PacketProcessor;
 import xyz.winston.nettytransporter.protocol.pipeline.Pipeline;
 
 import java.net.SocketAddress;
+import java.util.Collection;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
+@Log4j2
 @RequiredArgsConstructor
 public abstract class AbstractChannel {
 
@@ -49,21 +53,21 @@ public abstract class AbstractChannel {
         return epoll;
     }
 
-    protected void initPipeline(SocketChannel channel) {
-        Pipeline.initPipeline(this, channel);
+    protected void initPipeline(SocketChannel channel, Collection<PacketProcessor> customProcessors) {
+        Pipeline.initPipeline(this, channel, customProcessors);
     }
 
-    protected void initChannelInitializer() {
+    protected void initChannelInitializer(Collection<PacketProcessor> customProcessors) {
         channelInitializer = new ChannelInitializer<>() {
             @Override
             protected void initChannel(@NotNull SocketChannel ch) {
-                initPipeline(ch);
+                initPipeline(ch, customProcessors);
             }
         };
     }
 
-    protected void init() {
-        initChannelInitializer();
+    protected void init(Collection<PacketProcessor> customProcessors) {
+        initChannelInitializer(customProcessors);
     }
 
 }

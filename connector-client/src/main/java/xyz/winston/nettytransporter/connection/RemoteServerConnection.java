@@ -24,15 +24,10 @@ public class RemoteServerConnection extends AbstractRemoteServerChannel {
     }
 
     @Override
-    public void onServerDisconnect() {
-        // core.getServer().getPluginManager().callEvent(new ServerInactiveEvent());
-    }
-
-    @Override
     public void active() {
         sendPacket(
                 new Handshake.Request(
-                        Handshake.ConnectionType.SERVER, core.getToken(), serverName,
+                        core.getToken(), serverName,
                         core.getPort()
                 )
         );
@@ -48,6 +43,5 @@ public class RemoteServerConnection extends AbstractRemoteServerChannel {
         upgradeConnection(PacketProtocol.PLAY);
 
         log.info("[HANDSHAKE] Connection to server established");
-        // core.getServer().getPluginManager().callEvent(new ConnectionEstablishedEvent(this));
     }
 }

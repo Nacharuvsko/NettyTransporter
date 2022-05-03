@@ -3,7 +3,7 @@ package xyz.winston.nettytransporter.protocol.packet;
 import java.util.Iterator;
 
 /**
- * @author winston
+ * @author ItzStonlex, Whilein, winston
  */
 public abstract class BossProcessor implements PacketProcessor, Iterable<PacketProcessor> {
 

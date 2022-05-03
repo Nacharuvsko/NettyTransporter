@@ -1,11 +1,11 @@
-package xyz.winston.nettytransporter.connection.server;
+package xyz.winston.nettytransporter.connection.client;
 
 import org.jetbrains.annotations.NotNull;
 import xyz.winston.nettytransporter.connection.RemoteClientConnection;
 
-public class CommonServer extends AbstractServer {
+public class CommonClient extends AbstractClient {
 
-    public CommonServer(final @NotNull RemoteClientConnection connection, String name) {
+    public CommonClient(final @NotNull RemoteClientConnection connection, String name) {
         super(connection, name);
     }
 
