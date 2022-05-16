@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.Nullable;
+import xyz.winston.nettytransporter.protocol.conf.ClientConfiguration;
 import xyz.winston.nettytransporter.protocol.exception.ConnectException;
 import xyz.winston.nettytransporter.protocol.packet.BossProcessor;
 import xyz.winston.nettytransporter.protocol.packet.Packet;
@@ -41,8 +42,15 @@ public abstract class AbstractClientChannel extends AbstractChannel {
 
     private AbstractRemoteServerChannel channel;
 
-    public AbstractClientChannel(SocketAddress address, int threads) {
+    private ClientConfiguration clientConfiguration;
+
+    public AbstractClientChannel(
+            final @NonNull SocketAddress address,
+            final @NonNull ClientConfiguration clientConfiguration,
+            final int threads
+    ) {
         super(address, threads);
+        this.clientConfiguration = clientConfiguration;
 
         init(new ArrayList<>()); // пустой, ибо мы регаем процессоры в Connection.registerProcessor()
     }
@@ -64,6 +72,7 @@ public abstract class AbstractClientChannel extends AbstractChannel {
     protected boolean reconnecting;
 
     public void reconnect() {
+        if (!clientConfiguration.isAutoReconnect()) return;
         if (reconnecting) {
             return;
         }

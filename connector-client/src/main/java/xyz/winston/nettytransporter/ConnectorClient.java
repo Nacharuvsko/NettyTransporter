@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xyz.winston.nettytransporter.protocol.conf.ClientConfiguration;
 import xyz.winston.nettytransporter.connection.Connection;
 import xyz.winston.nettytransporter.connection.LocalClientConnection;
 import xyz.winston.nettytransporter.protocol.exception.ConnectException;
@@ -24,6 +25,8 @@ public final class ConnectorClient {
 
     private final String serverName;
 
+    private final ClientConfiguration clientConfiguration;
+
     private LocalClientConnection connection;
 
     private final SocketAddress address;
@@ -43,6 +46,8 @@ public final class ConnectorClient {
                 host,
                 port
         );
+
+        this.clientConfiguration = new ClientConfiguration();
     }
 
     public void openConnection() throws ConnectException{
@@ -50,7 +55,7 @@ public final class ConnectorClient {
     }
 
     public void openConnection(final @Nullable Runnable onConnected) throws ConnectException{
-        connection = new LocalClientConnection(this, serverName, address, 2);
+        connection = new LocalClientConnection(this, serverName, address, clientConfiguration, 2);
         connection.connectSynchronized();
 
         Connection.setConnection(connection);

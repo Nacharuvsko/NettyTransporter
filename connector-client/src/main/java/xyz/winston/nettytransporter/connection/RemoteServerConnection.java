@@ -3,6 +3,7 @@ package xyz.winston.nettytransporter.connection;
 
 import io.netty.channel.socket.SocketChannel;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import xyz.winston.nettytransporter.ConnectorClient;
 import xyz.winston.nettytransporter.protocol.channel.AbstractRemoteServerChannel;
 import xyz.winston.nettytransporter.protocol.packet.ChannelProcessorContext;
@@ -43,5 +44,15 @@ public class RemoteServerConnection extends AbstractRemoteServerChannel {
         upgradeConnection(PacketProtocol.PLAY);
 
         log.info("[HANDSHAKE] Connection to server established");
+    }
+
+    @Override
+    protected void onServerDisconnect() {
+        val disconnectAction = core.getClientConfiguration().getDisconnectAction();
+        if (disconnectAction != null) {
+            disconnectAction.run();
+        }
+
+        log.warn("Lost connection to the server");
     }
 }

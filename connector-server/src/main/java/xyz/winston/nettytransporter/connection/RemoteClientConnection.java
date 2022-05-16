@@ -56,6 +56,10 @@ public final class RemoteClientConnection extends AbstractRemoteClientChannel {
 
     @Override
     protected void onDisconnect() {
+        if (client == null) {
+            log.info("Unknown client disconnected");
+            return;
+        }
         try {
             log.info("Client {} disconnected.", client.getName());
             ClientManager.IMP.removeClient((AbstractClient) client);
